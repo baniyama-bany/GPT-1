@@ -48,7 +48,7 @@ train,val = torch.utils.data.random_split(dataset, [train_length, val_length], g
 train_loader = DataLoader(train, batch_size=TRAIN_BATCH, shuffle=True)
 val_loader = DataLoader(val, batch_size=VAL_BATCH, shuffle=False)
 
-optim = torch.optim.Adam(model.parameters(), lr=1e-5)
+optim = torch.optim.Adam(model.parameters(), lr=1e-4)
 device = torch.device("cuda")
 model = model.to(device)
 
