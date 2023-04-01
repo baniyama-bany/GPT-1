@@ -14,6 +14,7 @@ tokenizer = AutoTokenizer.from_pretrained("cl-tohoku/bert-base-japanese")
 PAD_IDX = tokenizer.pad_token_id
 BOS_IDX = tokenizer.cls_token_id
 EOS_IDX = tokenizer.sep_token_id
+UNK_IDX = tokenizer.unk_token_id
 VOCAB_SIZE = tokenizer.vocab_size
 
 model = GPT1(GPT1Config(vocab_size=VOCAB_SIZE))
@@ -52,6 +53,7 @@ for _ in range(seq_len):
         temperature = 1.
         filtered_logits = top_k(logits, thres = None, k=10)
         probs = F.softmax(filtered_logits / temperature, dim=-1)
+        probs[:, UNK_IDX] = 0.0
         pred = torch.multinomial(probs, 1)
     else:
         pred = logits.argmax().unsqueeze(0).unsqueeze(0)
