@@ -3,7 +3,6 @@ import random
 import transformers
 from transformers import AutoTokenizer
 import torch
-torch.manual_seed(41)
 import torch.optim as optim
 import torch.nn as nn
 from torch.nn import functional as F
