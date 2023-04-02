@@ -88,3 +88,127 @@ for i in tqdm(range(epoch)):
     torch.save(model.state_dict(), "model.bin")
 
     print("\EPOCH:{}\tTRAINLOSS:{}\tVALLOSS:{}".format(i, train_epoch_loss, val_epoch_loss))
+
+    
+    
+    
+    
+    
+# MEMO
+    
+# import re
+# import time
+# import torch
+# import transformers
+# from more_itertools import chunked
+# from parsers import splitter_ja, splitter_en
+
+# from transformers import pipeline
+# tokenizer_en_ja = transformers.AutoTokenizer.from_pretrained("staka/fugumt-en-ja")
+# tokenizer_ja_en = transformers.AutoTokenizer.from_pretrained("staka/fugumt-ja-en")
+# fugu_translator_en_ja = pipeline('translation', model='staka/fugumt-en-ja', device=0)
+# fugu_translator_ja_en = pipeline('translation', model='staka/fugumt-ja-en', device=0)
+
+# def en_ja(text):
+#     now = time.time()
+#     translated_text = fugu_translator_en_ja(text)[0]["translation_text"]
+#     if translated_text == "「この版権表示を残す」んだから、「禁無断複製」とかいうのはダメだぞ":
+#         translated_text = None
+#     # print("en_ja time:", time.time()-now)
+#     return translated_text
+
+# def ja_en(text):
+#     now = time.time()
+#     translated_text = fugu_translator_ja_en(text)[0]["translation_text"]
+#     translated_text = re.sub("[□■◇◆]", "", translated_text)
+#     # print("ja_en time:", time.time()-now)
+#     return translated_text
+
+# def chunker(text, trans_en_ja, max_length=512):
+
+#     tokenizer = tokenizer_en_ja if trans_en_ja else tokenizer_ja_en
+#     splitter = splitter_en if trans_en_ja else splitter_ja
+
+#     sentences = splitter(text)
+#     chunks = []
+#     chunk = [""]
+#     for sentence in sentences:
+#         if len(tokenizer.tokenize(" ".join(chunk))) > max_length:
+#             # print(len(tokenizer.tokenize(" ".join(chunk))))
+#             chunks.append(" ".join(chunk))
+#             chunk = [""]
+#         chunk.append(sentence)
+#     chunks.append(" ".join(chunk))
+
+#     chunks = [chunk for chunk in chunks if len(tokenizer.tokenize(chunk)) <= 500]
+#     return chunks
+
+
+
+# def translator_to_chunks(text, trans_en_ja=True, chunk_max_length=512, batch=1):
+#     chunks = chunker(text, trans_en_ja, chunk_max_length)
+#     # batchs = chunked(chunks)
+#     translator = en_ja if trans_en_ja else ja_en
+#     results = []
+#     for chunk in chunks:
+#         results.append(translator(chunk))
+#     return chunks, results
+
+# def translator_chunks(chunks, trans_en_ja=True):
+#     results = []
+#     tokenizer = tokenizer_en_ja if trans_en_ja else tokenizer_ja_en
+#     translator = en_ja if trans_en_ja else ja_en
+#     for chunk in chunks:
+#         if len(tokenizer.tokenize(chunk)) > 512 or chunk is None:
+#             results.append(None)
+#         else:
+#             results.append(translator(chunk))
+#     return chunks, results
+
+
+
+
+# import json
+# import re
+
+
+# with open("train.txt") as r:
+#     lines = r.readlines()
+
+# # print(json.loads(lines[0]))
+
+# re_katakana = re.compile('[a-zA-Z=\-\u30A1-\u30F4・＝]+')
+# re_title = re.compile("_START_ARTICLE_\n.+\n")
+# def en_detect(line):
+#     text = json.loads(line)["data"]
+#     title = re_title.findall(text)[0]
+#     # return re_katakana.fullmatch(title)
+#     return bool(re_katakana.findall(title.strip().replace("_START_ARTICLE_", "")))
+
+
+# lines = [line.strip() for line in lines if en_detect(line)]
+# with open("train_en_page.txt", "w") as w:
+#     w.write("\n".join(lines))
+
+
+
+        
+# import functools
+
+# from ja_sentence_segmenter.common.pipeline import make_pipeline
+# from ja_sentence_segmenter.concatenate.simple_concatenator import  concatenate_matching
+# from ja_sentence_segmenter.normalize.neologd_normalizer import  normalize
+# from ja_sentence_segmenter.split.simple_splitter import  split_newline, split_punctuation
+
+# split_punc2 = functools.partial(split_punctuation, punctuations=r".。 !?")
+# concat_tail_no = functools.partial(concatenate_matching, former_matching_rule=r"^(?P<result>.+)(の)$", remove_former_matched=False)
+# concat_decimal = functools.partial(concatenate_matching, former_matching_rule=r"^(?P<result>.+)(\d.)$", latter_matching_rule=r"^(\d)(?P<result>.+)$", remove_former_matched=False, remove_latter_matched=False)
+# segmenter = make_pipeline(normalize, split_newline, concat_tail_no, split_punc2)
+# segmenter = make_pipeline(normalize, split_newline, concat_tail_no, split_punc2, concat_decimal)
+
+# def splitter_ja(text):
+#     return list(segmenter(text))
+
+# def splitter_en(text):
+#     return "NOT IMPLEMENT"
+
