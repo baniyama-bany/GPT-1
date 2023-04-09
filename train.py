@@ -391,3 +391,67 @@ for i in tqdm(range(epoch)):
 #  ('より', 0.00045055329626974823),
 #  ('け', 0.00045054136582366666),
 #  ('リン', 0.000449004724368363),
+
+
+# import os
+# from os.path import join
+# import urllib
+# import gzip
+# from tqdm import tqdm
+
+
+# url_file = "https://data.commoncrawl.org/crawl-data/CC-MAIN-2021-43/wet.paths.gz"
+
+
+# index_name = url_file.split("/")[-2]
+# urllib.request.urlretrieve(url_file, index_name)
+
+# dir_name = index_name + "_FILES"
+# os.mkdir(dir_name)
+
+
+# base_url = "https://data.commoncrawl.org/"
+
+# # read urls
+# with gzip.open('wet.paths.gz', 'rb') as r:
+#     cc_urls = [base_url + line.decode().strip() for line in r.readlines()]
+#     cc_names = [line.split("/")[-1] for line in cc_urls]
+
+# cc_urls[0]
+
+
+# urllib.request.urlretrieve(cc_urls[0], join(dir_name, cc_names[0]))
+
+
+# # read file
+# with gzip.open(join(dir_name, cc_names[0]), 'rb') as r:
+#     text = r.read().decode()
+#     docs = text.split("WARC/1.0")
+    
+    
+# import re
+# re_hira_kata = re.compile("[ぁ-んァ-ヴー]")
+# re_kan = re.compile("[一-龠]")
+# re_ten = re.compile("[、。]")
+
+
+# print("source", len(docs))
+# docs = [re.split("Content\-Length:.+\r\n\r\n", doc)[-1] for doc in docs]
+# docs = [doc for doc in tqdm(docs) if len(doc)>500 and detect_ja(doc)]
+# print("ja", len(docs))
+
+
+# def filter_text(text):
+#     lines = text.replace("\r", "\n")
+#     lines = text.split("\n")
+#     filter_texts = []
+#     for line in lines:
+#         if line.strip().endswith("。"): filter_texts.append(line)
+#         if line.strip().endswith("？"): filter_texts.append(line)
+#         if line.strip().endswith("」"): filter_texts.append(line)
+#         # if line.strip().endswith("）"): filter_texts.append(line)
+#     return "\n".join(filter_texts)
+
+
+# docs = [filter_text(doc) for doc in docs]
+# docs = [doc for doc in docs if len(doc) > 50]
