@@ -455,3 +455,36 @@ for i in tqdm(range(epoch)):
 
 # docs = [filter_text(doc) for doc in docs]
 # docs = [doc for doc in docs if len(doc) > 50]
+
+
+
+
+# import threading
+# import requests
+
+# urls = [
+#     f"https://example.com/file{i}.zip" for i in range(1, 1001)
+# ]
+
+# class DownloadThread(threading.Thread):
+#     def __init__(self, urls):
+#         threading.Thread.__init__(self)
+#         self.urls = urls
+
+#     def run(self):
+#         for url in self.urls:
+#             response = requests.get(url)
+#             with open(url.split("/")[-1], "wb") as f:
+#                 f.write(response.content)
+
+# def download_in_parallel(urls, num_threads):
+#     threads = []
+#     for i in range(0, len(urls), num_threads):
+#         thread = DownloadThread(urls[i:i+num_threads])
+#         thread.start()
+#         threads.append(thread)
+
+#     for thread in threads:
+#         thread.join()
+
+# download_in_parallel(urls, 10)
