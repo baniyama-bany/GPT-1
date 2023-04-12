@@ -488,3 +488,133 @@ for i in tqdm(range(epoch)):
 #         thread.join()
 
 # download_in_parallel(urls, 10)
+
+
+
+# import datasets
+# from torch.utils.data import Dataset
+
+# class QADataset(Dataset):
+#     def __init__(self, tokenizer, max_length, mode="train"):
+#         self.tokenizer = tokenizer
+#         self.max_length = max_length
+#         self.data = [self.preprocess(data) for data in datasets.load_dataset("shunk031/JGLUE", "JCommonsenseQA")[mode]]
+      
+#     def preprocess(self, data):
+#         option = [data["choice0"], data["choice1"], data["choice2"], data["choice3"], data["choice4"]]
+#         context = "質問：" + data["question"] + "\n選択肢：" + "、".join(option) + "\n答え："
+#         answer = option[data["label"]]
+#         return context + answer + "</s>"
+
+#     def __len__(self):
+#         return len(self.data)
+
+#     def __getitem__(self, index):
+#         tokenized = self.tokenizer(
+#             self.data[index], 
+#             max_length=self.max_length, 
+#             padding="max_length", 
+#             truncation=True, 
+#             return_tensors="pt", 
+#             add_special_tokens=False
+#             )
+        
+#         tokenized["labels"] = tokenized["input_ids"].clone()
+#         tokenized["labels"][tokenized["labels"]==tokenizer.pad_token_id] = -100
+#         return tokenized
+
+
+# from transformers import AutoTokenizer
+# tokenizer = AutoTokenizer.from_pretrained("gpt2")
+# tokenizer.pad_token_id = tokenizer.eos_token_id
+
+# QADataset(tokenizer, 512)
+
+# import torch
+# from torch.utils.data import DataLoader
+# device = torch.device("cuda")
+# from transformers import AutoTokenizer, AutoModelForCausalLM
+# from tqdm import tqdm
+
+# tokenizer = AutoTokenizer.from_pretrained('rinna/japanese-gpt2-small', use_fast=False)
+# model = AutoModelForCausalLM.from_pretrained('rinna/japanese-gpt2-small').to(device)
+
+# # Add PAD Token
+# tokenizer.pad_token_id = tokenizer.eos_token_id
+# model.config.pad_token_id = tokenizer.eos_token_id
+
+# batch_size = 4
+# num_epochs = 2
+# learning_rate = 5e-5
+
+# dataset = QADataset(tokenizer, max_length=512)
+# dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+# optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+
+# model.train()
+# for epoch in range(num_epochs):
+#     total_loss = 0
+#     for batch in tqdm(dataloader):
+#         for key in batch: batch[key] = batch[key].to(device).squeeze()
+
+#         optimizer.zero_grad()
+#         outputs = model(**batch)
+#         loss = outputs.loss
+#         loss.backward()
+#         optimizer.step()
+#         total_loss += loss.item()
+        
+#     avg_loss = total_loss / len(dataloader)
+#     print(f'Epoch {epoch + 1} loss: {avg_loss}')
+
+#     # Save the model
+#     model.save_pretrained('qa_model')
+#     tokenizer.save_pretrained('qa_model')
+#     print("save!")
+
+# class QAGenDataset(Dataset):
+#     def __init__(self, tokenizer, max_length, mode="validation"):
+#         self.tokenizer = tokenizer
+#         self.max_length = max_length
+#         self.raw_data = datasets.load_dataset("shunk031/JGLUE", "JCommonsenseQA")[mode]
+#         self.data = [self.preprocess(data) for data in self.raw_data]
+      
+#     def preprocess(self, data):
+#         option = [data["choice0"], data["choice1"], data["choice2"], data["choice3"], data["choice4"]]
+#         context = "質問：" + data["question"] + "\n選択肢：" + "、".join(option) + "\n答え："
+#         answer = option[data["label"]]
+#         return context, answer
+
+#     def __len__(self):
+#         return len(self.data)
+
+#     def __getitem__(self, index):
+#         context, answer = self.data[index]
+#         tokenized = self.tokenizer(
+#             context, 
+#             max_length=self.max_length, 
+#             # padding="max_length", 
+#             truncation=True, 
+#             return_tensors="pt", 
+#             add_special_tokens=False
+#             )
+#         return tokenized, answer
+
+# import torch
+# from torch.utils.data import DataLoader
+# device = torch.device("cuda")
+# from transformers import AutoTokenizer, AutoModelForCausalLM
+
+# from tqdm import tqdm
+
+# # Load the GPT-2 tokenizer and model
+# tokenizer = AutoTokenizer.from_pretrained('rinna/japanese-gpt2-small', use_fast=False)
+# model = AutoModelForCausalLM.from_pretrained('qa_model').to(device)
+
+# test_dataset = QAGenDataset(tokenizer, max_length=512)
+
+# for context, answer in test_dataset:
+#     for key in context: context[key] = context[key].to(device)
+#     gen_ids = model.generate(**context, max_length=context["input_ids"].size(-1)+20, do_sample=False)
+#     output = tokenizer.batch_decode(gen_ids.cpu(), skip_special_tokens=False)
+#     print(output)
