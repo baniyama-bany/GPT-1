@@ -605,16 +605,16 @@ for i in tqdm(range(epoch)):
 # device = torch.device("cuda")
 # from transformers import AutoTokenizer, AutoModelForCausalLM
 
-# from tqdm import tqdm
-
-# # Load the GPT-2 tokenizer and model
-# tokenizer = AutoTokenizer.from_pretrained('rinna/japanese-gpt2-small', use_fast=False)
+# tokenizer = AutoTokenizer.from_pretrained('qa_model', use_fast=False)
 # model = AutoModelForCausalLM.from_pretrained('qa_model').to(device)
 
-# test_dataset = QAGenDataset(tokenizer, max_length=512)
+# test_dataset = QAGenDataset(tokenizer, max_length=5000)
 
 # for context, answer in test_dataset:
 #     for key in context: context[key] = context[key].to(device)
-#     gen_ids = model.generate(**context, max_length=context["input_ids"].size(-1)+20, do_sample=False)
+#     input_length = context["input_ids"].size(-1)
+#     gen_ids = model.generate(**context, max_length=input_length+20, do_sample=False)
 #     output = tokenizer.batch_decode(gen_ids.cpu(), skip_special_tokens=False)
-#     print(output)
+#     predict = output.split("</s>")[0]
+#     print(predict, answer, predict.strip()==answer.strip())
+
