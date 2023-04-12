@@ -618,3 +618,69 @@ for i in tqdm(range(epoch)):
 #     predict = output.split("</s>")[0]
 #     print(predict, answer, predict.strip()==answer.strip())
 
+
+# import pandas as pd
+# import datasets
+# from torch.utils.data import Dataset
+
+# class QADataset(Dataset):
+#     def __init__(self, tokenizer, max_length, mode="train"):
+#         self.tokenizer = tokenizer
+#         self.max_length = max_length
+#         self.data = [self.preprocess(data) for data in datasets.load_dataset("shunk031/JGLUE", "JCommonsenseQA")[mode]]
+      
+#     def preprocess(self, data):
+#         option = [data["choice0"], data["choice1"], data["choice2"], data["choice3"], data["choice4"]]
+#         context = "質問：" + data["question"] + "\n選択肢：" + "、".join(option) + "\n答え："
+#         answer = option[data["label"]]
+#         return context, answer
+
+#     def __len__(self):
+#         return len(self.data)
+
+#     def __getitem__(self, index):
+#         context, answer = self.data[index]
+#         tokenized_context = self.tokenizer(
+#             context, 
+#             max_length=self.max_length, 
+#             # padding="max_length", 
+#             truncation=True, 
+#             add_special_tokens=False
+#             )
+        
+#         tokenized_answer = self.tokenizer(
+#             answer, 
+#             max_length=self.max_length, 
+#             # padding="max_length", 
+#             truncation=True, 
+#             add_special_tokens=False
+#             )
+
+        
+#         tokenized = {}
+#         tokenized["input_ids"] = tokenized_context["input_ids"] + tokenized_answer["input_ids"] + [2]
+#         tokenized["attention_mask"] = tokenized_context["attention_mask"] + tokenized_answer["attention_mask"] + [0]
+#         tokenized["labels"] = [-100]*len(tokenized_context["input_ids"]) + tokenized_answer["input_ids"] + [2]
+
+#         # print(tokenized)
+
+#         if len(tokenized["input_ids"]) < 512: tokenized["input_ids"] += (512-len(tokenized["input_ids"]))*[2]
+#         if len(tokenized["attention_mask"]) < 512: tokenized["attention_mask"] += (512-len(tokenized["labels"]))*[0]
+#         if len(tokenized["labels"]) < 512: tokenized["labels"] += (512-len(tokenized["labels"]))*[-100]
+
+#         if len(tokenized["input_ids"]) > 512: tokenized["input_ids"] = tokenized["input_ids"][:512]
+#         if len(tokenized["attention_mask"]) > 512: tokenized["attention_mask"] = tokenized["attention_mask"][:512]
+#         if len(tokenized["labels"]) > 512: tokenized["labels"] = tokenized["labels"][:512]
+
+#         for key in tokenized: tokenized[key] = torch.tensor(tokenized[key])
+
+#         # print(tokenized)
+
+#         return tokenized
+
+
+# from transformers import AutoTokenizer
+# tokenizer = AutoTokenizer.from_pretrained("rinna/japanese-gpt2-small")
+# tokenizer.pad_token_id = tokenizer.eos_token_id
+
+# QADataset(tokenizer, 512)[0]
