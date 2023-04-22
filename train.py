@@ -684,3 +684,55 @@ for i in tqdm(range(epoch)):
 # tokenizer.pad_token_id = tokenizer.eos_token_id
 
 # QADataset(tokenizer, 512)[0]
+
+
+########
+# import json
+# import datasets
+# import random
+# import torch
+
+# INSTRUCTION = """[問題]から[質問]の回答を抜き出してください。\n"""
+# PROMPT_TEMPLETE = """[問題]:{CONTEXT}\n[質問]:{QUESTION}\n[回答]:{ANSWER}。"""
+
+# class FewDataset(torch.utils.data.Dataset):
+#     def __init__(self, tokenizer):
+#         self.tokenizer = tokenizer
+#         self.squad = datasets.load_dataset("shunk031/JGLUE", "JSQuAD")
+#         self.train = self.squad["train"]
+#         self.val = self.squad["validation"]
+#         self.incontext_prompt = self.make_incontext_prompt(random.sample(list(self.train), 2))
+#         print(self.incontext_prompt)
+      
+#     def make_incontext_prompt(self, samples):
+#         prompts = [self.make_prompt_sample(sample) for sample in samples]
+#         return "\n".join(prompts)
+    
+#     def make_prompt_sample(self, sample, prefix=False):
+#         question = sample["question"]
+#         context = sample["context"]
+#         if not prefix:
+#             answer = sample["answers"]["text"][0]
+
+#         prompt = PROMPT_TEMPLETE.replace("{QUESTION}", question)
+#         prompt = prompt.replace("{QUESTION}", question)
+#         prompt = prompt.replace("{CONTEXT}", context)
+
+#         if not prefix:
+#             prompt = prompt.replace("{ANSWER}", answer)
+#         else:
+#             prompt = prompt.replace("{ANSWER}。", "")
+#         return prompt
+
+#     def __len__(self):
+#         return len(self.val)
+
+#     def __getitem__(self, idx):
+#         prefix_sample = self.val[idx]
+#         prompt = self.incontext_prompt + "\n" + self.make_prompt_sample(prefix_sample, True)
+#         print(prompt)
+#         return self.tokenizer(prompt, 
+#                               return_tensors="pt", 
+#                               add_special_tokens=False,
+#                               max_length=512,
+#                               truncation=True)
