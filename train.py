@@ -736,3 +736,59 @@ for i in tqdm(range(epoch)):
 #                               add_special_tokens=False,
 #                               max_length=512,
 #                               truncation=True)
+
+
+# !pip install slack_bolt
+# !pip install slack_sdk
+
+# # update message
+
+# from slack_sdk import WebClient
+# from slack_sdk.errors import SlackApiError
+# from slack_bolt import App
+# from slack_bolt.adapter.socket_mode import SocketModeHandler
+
+# TOKEN = "xoxb-"
+# APP_TOKEN = "xapp-1-"
+
+# # Initialize a Slack app
+# app = App(token=TOKEN)
+# client = WebClient(token=TOKEN)
+
+# # Define a handler function for receiving messages
+# @app.event("message")
+# def handle_mention(event, say):
+#     # Get the text of the message that mentioned the bot
+#     message_text = event["text"]
+#     update_message = "START:\n"
+
+#     try:
+#         # Post a reply message to the original message's thread
+#         response = client.chat_postMessage(
+#             channel=event["channel"],
+#             thread_ts=event["ts"],
+#             text=update_message
+#         )
+#     except SlackApiError as e:
+#         print(f"Error posting message: {e}")
+
+#     print(response)
+    
+#     for i in range(5):
+#         update_message += "ごんごん"
+#         import time; time.sleep(0.5)
+#         # Send a reply message
+#         try:
+#             # Post a reply message to the original message's thread
+#             response = client.chat_update(
+#                 channel=response["channel"],
+#                 ts=response["ts"],
+#                 text=update_message
+#             )
+#         except SlackApiError as e:
+#             print(f"Error posting message: {e}")
+
+
+# # Start the Socket Mode handler
+# handler = SocketModeHandler(app=app, app_token=APP_TOKEN)
+# handler.start()
